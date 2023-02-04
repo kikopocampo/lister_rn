@@ -1,12 +1,7 @@
-import {
-  Button,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  ScrollView,
-} from "react-native";
+import { Button, StyleSheet, TextInput, View, FlatList } from "react-native";
 import { useState } from "react";
+import GoalItem from "./components/GoalItem";
+import GoalInput from "./components/GoalInput";
 
 export default function App() {
   const [enteredText, setEnteredText] = useState("");
@@ -16,31 +11,32 @@ export default function App() {
     setEnteredText(enteredText);
   }
   function addGoalHandler() {
-    setTodo((prev) => [...prev, enteredText]);
+    setTodo((prev) => [
+      ...prev,
+      { text: enteredText, id: Math.random().toString() },
+    ]);
     setEnteredText("");
   }
   // console.log(todo);
   return (
     <View style={styles.appContainer}>
-      <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="What do you need to do?"
-          style={styles.textInput}
-          onChangeText={goalInputHandler}
-          value={enteredText}
-        />
-        <Button title="Add to list" onPress={addGoalHandler} />
-      </View>
+      <GoalInput
+        goalInputHandler={goalInputHandler}
+        addGoalHandler={addGoalHandler}
+        enteredText={enteredText}
+      />
+
       <View style={styles.goalsContainer}>
-        <ScrollView>
-          {todo.map((el, i) => {
-            return (
-              <View key={i} style={styles.goalItem}>
-                <Text style={styles.goalText}>{el}</Text>
-              </View>
-            );
-          })}
-        </ScrollView>
+        <FlatList
+          data={todo}
+          alwaysBounceVertical={false}
+          renderItem={(itemData) => {
+            return <GoalItem text={itemData.item.text} />;
+          }}
+          keyExtractor={(item, index) => {
+            return item.id;
+          }}
+        />
       </View>
     </View>
   );
@@ -70,15 +66,5 @@ const styles = StyleSheet.create({
   },
   goalsContainer: {
     flex: 5,
-  },
-  goalItem: {
-    margin: 8,
-    padding: 8,
-    borderRadius: 6,
-    backgroundColor: "darkgreen",
-  },
-  goalText: {
-    textAlign: "center",
-    color: "white",
   },
 });
