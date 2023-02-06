@@ -1,9 +1,11 @@
 import { Button, StyleSheet, TextInput, View, FlatList } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import GoalItem from "./components/GoalItem";
 import GoalInput from "./components/GoalInput";
 
 export default function App() {
+  const [modalIsVisible, setModalIsVisible] = useState(false);
   const [enteredText, setEnteredText] = useState("");
   const [todo, setTodo] = useState([]);
 
@@ -16,6 +18,7 @@ export default function App() {
       ...prev,
       { text: enteredText, id: Math.random().toString() },
     ]);
+    setModalIsVisible(false);
     setEnteredText("");
   }
 
@@ -24,40 +27,52 @@ export default function App() {
   }
 
   return (
-    <View style={styles.appContainer}>
-      <GoalInput
-        goalInputHandler={goalInputHandler}
-        addGoalHandler={addGoalHandler}
-        enteredText={enteredText}
-      />
-
-      <View style={styles.goalsContainer}>
-        <FlatList
-          data={todo}
-          alwaysBounceVertical={false}
-          renderItem={(itemData) => {
-            return (
-              <GoalItem
-                id={itemData.item.id}
-                text={itemData.item.text}
-                deleteTodoHandler={deleteTodoHandler}
-              />
-            );
-          }}
-          keyExtractor={(item, index) => {
-            return item.id;
-          }}
+    <>
+      <StatusBar style="light" />
+      <View style={styles.appContainer}>
+        <Button
+          title="Add New Todo"
+          color="white"
+          onPress={() => setModalIsVisible(true)}
         />
+
+        <GoalInput
+          goalInputHandler={goalInputHandler}
+          addGoalHandler={addGoalHandler}
+          enteredText={enteredText}
+          visible={modalIsVisible}
+          closeModal={() => setModalIsVisible(false)}
+        />
+
+        <View style={styles.goalsContainer}>
+          <FlatList
+            data={todo}
+            alwaysBounceVertical={false}
+            renderItem={(itemData) => {
+              return (
+                <GoalItem
+                  id={itemData.item.id}
+                  text={itemData.item.text}
+                  deleteTodoHandler={deleteTodoHandler}
+                />
+              );
+            }}
+            keyExtractor={(item, index) => {
+              return item.id;
+            }}
+          />
+        </View>
       </View>
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   appContainer: {
     flex: 1,
-    paddingTop: 50,
+    paddingTop: 80,
     paddingHorizontal: 16,
+    backgroundColor: "black",
   },
   inputContainer: {
     flex: 1,
