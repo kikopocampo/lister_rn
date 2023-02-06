@@ -10,6 +10,7 @@ export default function App() {
   function goalInputHandler(enteredText) {
     setEnteredText(enteredText);
   }
+
   function addGoalHandler() {
     setTodo((prev) => [
       ...prev,
@@ -17,7 +18,11 @@ export default function App() {
     ]);
     setEnteredText("");
   }
-  // console.log(todo);
+
+  function deleteTodoHandler(itemData) {
+    setTodo((prev) => prev.filter((el) => el.id !== itemData));
+  }
+
   return (
     <View style={styles.appContainer}>
       <GoalInput
@@ -31,7 +36,13 @@ export default function App() {
           data={todo}
           alwaysBounceVertical={false}
           renderItem={(itemData) => {
-            return <GoalItem text={itemData.item.text} />;
+            return (
+              <GoalItem
+                id={itemData.item.id}
+                text={itemData.item.text}
+                deleteTodoHandler={deleteTodoHandler}
+              />
+            );
           }}
           keyExtractor={(item, index) => {
             return item.id;
